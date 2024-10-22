@@ -1,0 +1,16 @@
+:root {
+    --branco: #FFFFFF;
+    --preto: #000000;
+    --roxo: #7814FF;
+    --cinza: #707070;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
