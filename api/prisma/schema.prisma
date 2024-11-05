@@ -32,9 +32,9 @@ model Alocacao {
   area             Int
   automovelId      Int
   concessionariaId Int
+  quantidade       Int
   automovel        Automoveis     @relation(fields: [automovelId], references: [id])
   concessionaria   Concessionaria @relation(fields: [concessionariaId], references: [id])
-  quantidade       Int
   vendas           Vendas[]
 }
 
