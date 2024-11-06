@@ -12,10 +12,14 @@ router.get("/", (req, res) => {
 
 router.get("/automoveis", Automovel.read)
 router.get("/automoveis/area", Automovel.readAlocacao)
+router.get("/automoveis/area/:area", Automovel.readAutomovelByAlocacao)
 
 router.get('/clientes', Cliente.read)
 
 router.get('/concessionaria', concessionaria.readConcessionaria)
 router.get('/concessionaria/:automovelId', concessionaria.readConcessionaria)
+
+router.get('/vendas', Venda.read)
+router.post('/vendas', Venda.createVenda)
 
 module.exports = router

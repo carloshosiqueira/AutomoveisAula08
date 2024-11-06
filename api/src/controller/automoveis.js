@@ -13,7 +13,39 @@ const read = async (req, res) => {
         res.status(200).json(alocacao);
     }
 
+    const readAutomovelByAlocacao = async (req, res) => {
+        const area = Number(req.params.area); // Make sure the 'area' is a number
+      
+        try {
+          const automovel = await prisma.automoveis.findMany({
+            where: {
+              alocacoes: {
+                some: {
+                  area: {
+                    equals: area //procurar onde area = area
+                  }
+                }
+              }
+            },
+            include: {
+              alocacoes: {
+                  select: {
+                      quantidade: true,
+                      id: true 
+                  }
+              }
+          }
+          });
+      
+          res.status(200).json(automovel);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      };
+      
+
 module.exports = {
     read,
     readAlocacao,
+    readAutomovelByAlocacao,
 }

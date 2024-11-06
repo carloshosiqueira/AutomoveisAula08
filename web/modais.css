@@ -1,0 +1,104 @@
+/* Modal Overlay (covers the screen) */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    z-index: 9999; /* Make sure the modal is on top */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden; /* Hidden by default */
+    opacity: 0; /* Fully transparent */
+    pointer-events: none; /* Prevent interaction when hidden */
+    transition: visibility 0s 0.3s, opacity 0.3s ease-in-out; /* Smooth transition */
+}
+
+/* When modal is shown */
+.modalOverlay.show {
+    visibility: visible; /* Make modal visible */
+    opacity: 1; /* Fully opaque */
+    pointer-events: auto; /* Enable interaction */
+    transition: visibility 0s 0s, opacity 0.3s ease-in-out; /* Smooth fade-in */
+}
+
+/* Modal content box */
+.modal {
+    background-color: white; /* White background for the modal */
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for a nice effect */
+    overflow-y: auto; /* Allows scrolling if content overflows */
+}
+
+/* Modal header (contains close button) */
+.cabecalho {
+    display: flex;
+    justify-content: flex-end; /* Align the close button to the top right */
+    padding-bottom: 10px;
+}
+
+/* Close button style (×) */
+.cabecalho span {
+    font-size: 1.5rem; /* Larger size for the '×' symbol */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    color: #333; /* Dark color for the close button */
+    transition: color 0.2s ease; /* Smooth transition for color change */
+}
+
+.cabecalho span:hover {
+    color: red; /* Change color to red on hover */
+}
+
+/* Modal body */
+.modal-body {
+    padding: 20px;
+}
+
+/* Title inside the modal */
+#area {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Container for the car models */
+.modelos {
+    margin-top: 10px;
+}
+
+/* Each option displayed inside the modal */
+.modelos div {
+    margin-bottom: 10px; /* Space between car options */
+    padding: 10px;
+    background-color: #f9f9f9; /* Light background for the options */
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light border around each option */
+}
+
+/* Styling for the text inside each car option */
+.modelos p {
+    font-size: 1rem;
+    color: #333; /* Dark text color */
+    margin: 0;
+}
+
+/* Optional: Fade out the modal on click outside */
+.modalOverlay.oculto {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out, visibility 0s 0.3s;
+}
+
+/* Additional responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .modal {
+        width: 90%; /* Make the modal smaller on mobile devices */
+    }
+}

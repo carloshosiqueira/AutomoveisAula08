@@ -11,20 +11,41 @@
 </head>
 
 <body>
+
     <!-- Modal exibir carros por área -->
-    <!-- <div class="modalOverlay oculto" id="modalAreaCarros" tabindex="-1">
+    <div class="modalOverlay oculto" id="modalAreaCarros">
         <div class="modal">
             <div class="cabecalho">
                 <span>&#10005;</span>
             </div>
             <div class="modal-body">
                 <h3 id="area"></h3>
-                <table>
-                   <tbody id="dadosCarro"></tbody>
-                </table>
+                <div class="modelos" id="opcoes"></div>
             </div>
         </div>
-    </div> -->
+    </div>
+    <!-- Modal de venda -->
+    <div class="modalOverlay oculto" id="modalVenda">
+        <div class="modal">
+            <div class="cabecalho">
+                <span>&#10005;</span>
+            </div>
+            <div class="modal-body">
+                <h3 id="modeloCarro"></h3>
+                <form id="formVenda">
+                    <div class="cliente">
+                        <label>Cliente:</label>
+                        <select id="clientes" name="cliente"></select>
+                    </div>
+                    <div class="concessionaria">
+                        <label>Concessionaria:</label>
+                        <select id="concessionarias" name="concessionaria"></select>
+                    </div>
+                    <button type="submit">Confirmar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 </body>
