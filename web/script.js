@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
             modelos.forEach(modelo => {
                 const quantidade = modelo.alocacoes[0]?.quantidade || 0;
                 const idAlocacao = modelo.alocacoes[0]?.id;
-                console.log(`Alocacao ID: ${idAlocacao}, Quantidade: ${quantidade}`);
 
                 if (quantidade > 0) {
                     let opcao = document.createElement('div');
@@ -71,75 +70,133 @@ document.addEventListener('DOMContentLoaded', () => {
                     const venderButton = opcao.querySelector('.vender');
                     venderButton.addEventListener('click', () => abrirModalVenda(modelo.modelo, idAlocacao));
                 } else {
-                    console.log(`Modelo ${modelo.modelo} is out of stock or has no quantity.`);
+                    console.error(`Modelo ${modelo.modelo} está esgotado.`);
                 }
             });
         }
     });
 
-    document.querySelector('.cabecalho span').addEventListener('click', () => {
-        modalAreaCarros.classList.remove('show'); // Hide the modal
+    const modalVenda = document.getElementById("modalVenda");
+    const btnFecharModalCarros = document.getElementById('fecharCarros')
+    const btnFecharModalVendas = document.getElementById('fecharVendas')
+
+    btnFecharModalCarros.addEventListener('click', () => {
+        modalAreaCarros.classList.remove('show');
+        modalAreaCarros.classList.add('oculto');
     });
+
+    btnFecharModalVendas.addEventListener('click', () => {
+        modalVenda.classList.remove('show');
+        modalVenda.classList.add('oculto');
+    });
+    
     function abrirModalVenda(modelo, idAlocacao) {
-        const modalVenda = document.getElementById("modalVenda");
+        modalAreaCarros.classList.add('oculto');
         modalVenda.classList.add('show');
         modalVenda.classList.remove('oculto');
-
-        const modeloCarro = document.getElementById('modeloCarro')
+    
+        const modeloCarro = document.getElementById('modeloCarro');
         modeloCarro.innerHTML = modelo;
-
+    
         const formVenda = document.getElementById("formVenda");
-
+    
+        // Preenchendo os selects de clientes e concessionárias
         getClientes();
-        getConcessionaria(); 
-
+        getConcessionariasPorModelo(modelo); // Chamada para buscar concessionárias específicas
+    
+        // Submissão do formulário de venda
         formVenda.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            const alocacaoId = idAlocacao;
-            console.log(alocacaoId);
-            const clienteId = document.getElementById('cliente').value;
-            const concessionariaId = document.getElementById('concessionaria').value;
-
-            let response = await fetch(`http://localhost:3000/vendas`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    alocacaoId,
-                    clienteId,
-                    concessionariaId
-                }),
-            });
+    
+            // Verifique se os selects existem
+            const selectCliente = document.getElementById('clientes');
+            const selectConcessionaria = document.getElementById('concessionarias');
+    
+            // Verificar se os selects estão presentes no DOM e têm valores selecionados
+            if (!selectCliente || !selectConcessionaria) {
+                console.error('Erro: os elementos de cliente ou concessionária não estão presentes no DOM!');
+                return;
+            }
+    
+            const clienteId = selectCliente.value;
+            const concessionariaId = selectConcessionaria.value;
+    
+            // Verifique se os valores selecionados são válidos
+            if (!clienteId || !concessionariaId) {
+                console.error('Erro: Cliente ou concessionária não selecionados!');
+                return;
+            }
+    
+            try {
+                let response = await fetch(`http://localhost:3000/vendas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        alocacaoId: idAlocacao,
+                        clienteId: clienteId,
+                        concessionariaId: concessionariaId
+                    }),
+                });
+    
+                if (response.ok) {
+                    modalVenda.classList.remove('show');
+                    modalVenda.classList.add('oculto');
+                } else {
+                    console.error('Erro ao registrar a venda');
+                }
+            } catch (error) {
+                console.error('Erro ao realizar a requisição de venda:', error);
+            }
         });
     }
+    
 
     getAlocacoes();  // Chamando a função assíncrona para buscar as alocações
 
 
     //Carregando clientes e concessionarias na pagina de venda
     async function getClientes() {
-        let response = await fetch('http://localhost:3000/clientes');
-        let clientes = await response.json();
-        const selectClientes = document.getElementById('clientes');
-        clientes.forEach(cliente => {
-            let option = document.createElement('option');
-            option.value = cliente.id;
-            option.innerHTML = cliente.nome;
-            selectClientes.appendChild(option);
-        });
+        try {
+            let response = await fetch('http://localhost:3000/clientes');
+            let clientes = await response.json();
+            const selectClientes = document.getElementById('clientes');
+    
+            clientes.forEach(cliente => {
+                let option = document.createElement('option');
+                option.value = cliente.id;
+                option.innerHTML = cliente.nome;
+                selectClientes.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar clientes:', error);
+        }
     }
 });
 
-async function getConcessionaria() {
-    let response = await fetch('http://localhost:3000/concessionaria');
-    let concessionarias = await response.json();
-    const selectConcessionarias = document.getElementById('concessionarias');
-    concessionarias.forEach(concessionaria => {
-        let option = document.createElement('option');
-        option.value = concessionaria.id;
-        option.innerHTML = concessionaria.nome;
-        selectConcessionarias.appendChild(option);
-    });
+async function getConcessionariasPorModelo(modelo) {
+    try {
+        // Buscando todos os automóveis para encontrar o automóvel pelo nome (modelo)
+        const response = await fetch('http://localhost:3000/automoveis');
+        const automoveis = await response.json();
+        const automovel = automoveis.find(a => a.modelo === modelo);
+
+        // Buscando as concessionárias que possuem o automóvel
+        const concessionariasResponse = await fetch(`http://localhost:3000/concessionaria/${automovel.id}`);
+        const concessionarias = await concessionariasResponse.json();
+        // Atualizando o select de concessionárias no modal de vendas
+        const selectConcessionarias = document.getElementById('concessionarias');
+        selectConcessionarias.innerHTML = ''; // Limpa as opções anteriores
+
+        concessionarias.forEach(concessionaria => {
+            let option = document.createElement('option');
+            option.value = concessionaria.id;
+            option.innerHTML = concessionaria.nome;
+            selectConcessionarias.appendChild(option);
+        });
+
+    } catch (e) {
+        console.error('Erro ao buscar concessionárias:', e);
+    }
 }
